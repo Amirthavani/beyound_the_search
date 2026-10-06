@@ -246,8 +246,8 @@ export function Admin() {
               <label>To date<input name="endDate" type="date" min={listForm.startDate || undefined} value={listForm.endDate} onChange={updateListForm} required /></label>
             </>}
             <label>Address (optional)<input name="address" value={listForm.address} onChange={updateListForm} /></label>
-            <label>Location<select name="location" value={listForm.location} onChange={updateListForm} required>
-              <option value="" disabled>Select a location</option>
+            <label>City<select name="location" value={listForm.location} onChange={updateListForm} required>
+              <option value="" disabled>Select a city</option>
               {locations.map((location) => <option value={location.name} key={location._id}>{location.name}</option>)}
             </select></label>
             <label>Phone number<input name="phone" type="tel" pattern="^\+?[0-9][0-9\s().-]{6,24}$" title="Enter a valid phone number with 7 to 15 digits." value={listForm.phone} onChange={updateListForm} required /></label>

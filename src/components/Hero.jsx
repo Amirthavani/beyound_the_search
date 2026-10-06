@@ -50,7 +50,7 @@ export function Hero() {
       </div>
       <div
         className={styles.heroVisual}
-        aria-label="Featured directory location"
+        aria-label="Featured directory city"
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}
       >

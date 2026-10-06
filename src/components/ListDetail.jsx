@@ -111,7 +111,7 @@ export function ListDetail({ id }) {
           </div>
           <div className={styles.description} dangerouslySetInnerHTML={{ __html: list.message }} />
           <dl>
-            {list.location && <div><dt>Location</dt><dd>{list.location}</dd></div>}
+            {list.location && <div><dt>City</dt><dd>{list.location}</dd></div>}
             {list.address && <div><dt>Address</dt><dd>{list.address}</dd></div>}
             {(list.startDate || list.endDate) && <div><dt>Dates</dt><dd>{formatEventDates(list.startDate, list.endDate)}</dd></div>}
             {(list.userId?.username || list.name) && <div><dt>Submitted by</dt><dd>{list.userId?.username || list.name}</dd></div>}

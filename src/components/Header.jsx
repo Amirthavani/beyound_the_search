@@ -169,7 +169,7 @@ export function Header() {
         {isLoggedIn && accountOpen && <nav className={styles.accountMenu} aria-label="Account menu">
           {preferences && <div className={styles.preferences}>
             <strong>Your preferences</strong>
-            <span>Locations: {preferenceLocations.join(', ')}</span>
+            <span>Cities: {preferenceLocations.join(', ')}</span>
             <span>Interests: {preferenceInterests.join(', ')}</span>
             <button type="button" onClick={resetPreferences}>Change preferences</button>
           </div>}
@@ -196,7 +196,7 @@ export function Header() {
         {!isLoggedIn && accountOpen && <nav className={styles.accountMenu} aria-label="Visitor preferences">
           {preferences && <div className={styles.preferences}>
             <strong>Your preferences</strong>
-            <span>Locations: {preferenceLocations.join(', ')}</span>
+            <span>Cities: {preferenceLocations.join(', ')}</span>
             <span>Interests: {preferenceInterests.join(', ')}</span>
             <button type="button" onClick={resetPreferences}>Change preferences</button>
           </div>}

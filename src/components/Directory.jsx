@@ -123,7 +123,7 @@ export function Directory({ embedded = false, selectedCategory = '', onClearCate
       {embedded ? <div className={styles.feedHeading}>
         <p className={`${styles.kicker} ${styles.recommendationKicker}`}>
           Recommended for you
-          <span><strong>Locations:</strong> {preferredLocations.join(', ') || 'All locations'} · <strong>Categories:</strong> {selectedCategory || preferredCategories.join(', ') || 'All categories'}</span>
+          <div><strong>Cities:</strong> {preferredLocations.join(', ') || 'All cities'} · </div><div><strong>Categories:</strong> {selectedCategory || preferredCategories.join(', ') || 'All categories'}</span>
         </p>
         <div className={styles.feedTitle}>
           <h2>{selectedCategory ? `${selectedCategory} listings` : 'All places worth finding.'}</h2>
@@ -158,9 +158,9 @@ export function Directory({ embedded = false, selectedCategory = '', onClearCate
           <input type="date" name="date" value={filters.date} onChange={updateFilter} />
         </label>
         <label>
-          Location
+          City
           <select name="location" value={filters.location} onChange={updateFilter}>
-            <option value="">All locations</option>
+            <option value="">All cities</option>
             {locations.map((location) => <option value={location.name} key={location._id}>{location.name}</option>)}
           </select>
         </label>

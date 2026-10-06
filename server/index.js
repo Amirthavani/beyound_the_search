@@ -90,7 +90,10 @@ const mailer = process.env.SMTP_HOST
       port: Number(process.env.SMTP_PORT || 587),
       secure: process.env.SMTP_SECURE === 'true',
       auth: process.env.SMTP_USER ? { user: process.env.SMTP_USER, pass: process.env.SMTP_PASSWORD } : undefined,
-    })
+  tls: {
+    ciphers: 'SSLv3',
+    rejectUnauthorized: true // Helps bypass potential local certificate issues
+  } })
   : null
 
 const sanitizeMessage = (value) => {
@@ -254,6 +257,42 @@ const resolveListItemType = async (body) => {
   }).select('_id label').lean()
   if (!menuItem || body.itemType !== menuItem.label) return null
   return { itemType: menuItem.label, itemTypeId: menuItem._id }
+}
+const escapeRegExp = (value) => value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+const normalizeCityName = (value) => String(value || '').normalize('NFKC').replace(/\s+/g, ' ').trim()
+const resolveListCity = async (body) => {
+  const isOtherCity = body.location === '__other__'
+  const name = normalizeCityName(isOtherCity ? body.otherCity : body.location)
+  if (!name || name.length > 100) return { error: 'Enter a city name up to 100 characters.' }
+
+  const existing = await Location.findOne({ name: { $regex: `^${escapeRegExp(name)}$`, $options: 'i' } })
+  if (existing) {
+    if (!existing.is_active) {
+      existing.is_active = true
+      await existing.save()
+    }
+    return { value: existing.name }
+  }
+  if (!isOtherCity) return { error: 'Please select a valid city.' }
+
+  const lastLocation = await Location.findOne().sort({ order: -1 }).select('order').lean()
+  try {
+    const location = await Location.create({
+      name,
+      order: (lastLocation?.order ?? -1) + 1,
+      is_active: true,
+    })
+    return { value: location.name }
+  } catch (error) {
+    if (!isDuplicateKeyError(error)) throw error
+    const duplicate = await Location.findOne({ name: { $regex: `^${escapeRegExp(name)}$`, $options: 'i' } })
+    if (!duplicate) throw error
+    if (!duplicate.is_active) {
+      duplicate.is_active = true
+      await duplicate.save()
+    }
+    return { value: duplicate.name }
+  }
 }
 
 app.use(cors())
@@ -548,7 +587,10 @@ app.get('/api/locations/nearby', async (request, response, next) => {
       const a = Math.sin(latDelta / 2) ** 2 + Math.cos(originLat) * Math.cos(locationLat) * Math.sin(lonDelta / 2) ** 2
       return 3958.8 * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
     }
-    response.json(locations.sort((first, second) => distance(first) - distance(second)).slice(0, 5))
+    response.json(locations
+      .filter((location) => Number.isFinite(location.latitude) && Number.isFinite(location.longitude))
+      .sort((first, second) => distance(first) - distance(second))
+      .slice(0, 5))
   } catch (error) {
     next(error)
   }
@@ -582,9 +624,8 @@ app.post('/api/lists', authenticate, upload.array('photos', 10), async (request,
     if (isEventType(request.body) && !request.body.eventSubcategory?.trim()) {
       return response.status(400).json({ error: 'Please select an event subcategory.' })
     }
-    if (!(await Location.exists({ name: request.body.location.trim(), is_active: true }))) {
-      return response.status(400).json({ error: 'Please select a valid location.' })
-    }
+    const city = await resolveListCity(request.body)
+    if (city.error) return response.status(400).json({ error: city.error })
     const dateRange = isEventType(request.body) ? parseDateRange(request.body) : {}
     if (isEventType(request.body) && (!dateRange || !isUpcomingDateRange(dateRange))) {
       return response.status(400).json({ error: 'Events require future start and end dates.' })
@@ -602,7 +643,7 @@ app.post('/api/lists', authenticate, upload.array('photos', 10), async (request,
       ...dateRange,
       eventSubcategory: isEventType(request.body) ? request.body.eventSubcategory.trim() : undefined,
       address: request.body.address?.trim() || undefined,
-      location: request.body.location?.trim() || undefined,
+      location: city.value,
       url: request.body.url?.trim() || undefined,
       instagram: request.body.instagram?.trim() || undefined,
       message: sanitizeMessage(request.body.message),

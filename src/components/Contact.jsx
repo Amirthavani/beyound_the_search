@@ -10,6 +10,8 @@ export function Contact() {
   const [locations, setLocations] = useState([])
   const [itemType, setItemType] = useState('')
   const [itemTypeId, setItemTypeId] = useState('')
+  const [city, setCity] = useState('')
+  const [otherCity, setOtherCity] = useState('')
   const [error, setError] = useState('')
   const [successMessage, setSuccessMessage] = useState('')
   const [message, setMessage] = useState('')
@@ -61,6 +63,8 @@ export function Contact() {
       event.currentTarget.reset()
       setItemType('')
       setItemTypeId('')
+      setCity('')
+      setOtherCity('')
       setOtherItemType('')
       setEventSubcategory('')
       setMessage('')
@@ -122,12 +126,17 @@ export function Contact() {
             <input type="text" name="address" placeholder="Street address" />
           </label>
           <label>
-            Location
-            <select required name="location" defaultValue="">
-              <option value="" disabled>Select a location</option>
+            City
+            <select required name="location" value={city} onChange={(event) => setCity(event.target.value)}>
+              <option value="" disabled>Select a city</option>
               {locations.map((location) => <option value={location.name} key={location._id}>{location.name}</option>)}
+              <option value="__other__">Other city</option>
             </select>
           </label>
+          {city === '__other__' && <label>
+            Other city
+            <input required type="text" name="otherCity" value={otherCity} onChange={(event) => setOtherCity(event.target.value)} maxLength="100" placeholder="Enter a city" />
+          </label>}
           <label>
             Phone number
             <input required type="tel" name="phone" pattern="^\+?[0-9][0-9\s().-]{6,24}$" title="Enter a valid phone number with 7 to 15 digits." placeholder="+1 555 123 4567" />

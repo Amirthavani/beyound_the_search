@@ -191,8 +191,8 @@ export function Account() {
             <label>To date<input required type="date" min={editing.startDate ? editing.startDate.slice(0, 10) : undefined} value={editing.endDate ? editing.endDate.slice(0, 10) : ''} onChange={(event) => setEditing({ ...editing, endDate: event.target.value })} /></label>
           </>}
           <label>Address (optional)<input value={editing.address || ''} onChange={(event) => setEditing({ ...editing, address: event.target.value })} /></label>
-          <label>Location<select required value={editing.location || ''} onChange={(event) => setEditing({ ...editing, location: event.target.value })}>
-            <option value="" disabled>Select a location</option>
+          <label>City<select required value={editing.location || ''} onChange={(event) => setEditing({ ...editing, location: event.target.value })}>
+            <option value="" disabled>Select a city</option>
             {locations.map((location) => <option value={location.name} key={location._id}>{location.name}</option>)}
           </select></label>
           <label>Phone number<input required type="tel" pattern="^\+?[0-9][0-9\s().-]{6,24}$" title="Enter a valid phone number with 7 to 15 digits." value={editing.phone} onChange={(event) => setEditing({ ...editing, phone: event.target.value })} /></label>
@@ -227,7 +227,7 @@ export function Account() {
             {list.eventSubcategory && <span>Event: {list.eventSubcategory}</span>}
             {(list.startDate || list.endDate) && <span>Dates: {formatEventDates(list.startDate, list.endDate)}</span>}
             {list.address && <span>Address: {list.address}</span>}
-            {list.location && <span>Location: {list.location}</span>}
+            {list.location && <span>City: {list.location}</span>}
             {list.phone && <span>Phone: {list.phone}</span>}
             {list.url && <span>URL: <a href={list.url} target="_blank" rel="noreferrer">{list.url}</a></span>}
             {list.instagram && <span>Instagram: <a href={list.instagram} target="_blank" rel="noreferrer">{list.instagram}</a></span>}

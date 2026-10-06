@@ -96,7 +96,7 @@ export function VisitorPreferences({ onComplete }) {
   const submit = (event) => {
     event.preventDefault()
     if (selectedLocations.length === 0 || selectedInterests.length === 0) {
-      setError('Please select at least one location and one interest to continue.')
+      setError('Please select at least one city and one interest to continue.')
       return
     }
     const preferences = { zipCode: zipCode.trim(), locations: selectedLocations, interests: selectedInterests }
